@@ -13,11 +13,11 @@ class PeersVm: ObservableObject {
     @Published var peerList = ""
 
     /// manages
-    private var peerController: PeerController
+    private var peerController: PeersController
     private var peerMessage = [String: [String:Any]]()
 
     init() {
-        peerController = PeerController()
+        peerController = PeersController()
         peerController.delegate = self
         oneSecondCounter()
     }

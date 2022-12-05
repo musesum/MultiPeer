@@ -9,7 +9,7 @@ protocol PeersControllerDelegate: AnyObject {
 }
 
 /// advertise and browse for peers via Bonjour
-class PeerController: NSObject {
+class PeersController: NSObject {
 
     /// Info.plist values for this service are:
     ///
@@ -76,7 +76,7 @@ class PeerController: NSObject {
     }
 }
 
-extension PeerController: MCSessionDelegate {
+extension PeersController: MCSessionDelegate {
 
     func session(_ session: MCSession,
                  peer peerID: MCPeerID,
@@ -144,7 +144,7 @@ extension PeerController: MCSessionDelegate {
     }
 }
 
-extension PeerController: MCNearbyServiceBrowserDelegate {
+extension PeersController: MCNearbyServiceBrowserDelegate {
 
     // Found a nearby advertising peer
     func browser(_ browser: MCNearbyServiceBrowser,
@@ -173,7 +173,7 @@ extension PeerController: MCNearbyServiceBrowserDelegate {
     }
 }
 
-extension PeerController: MCNearbyServiceAdvertiserDelegate {
+extension PeersController: MCNearbyServiceAdvertiserDelegate {
 
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
         logPeer("didReceiveInvitationFromPeer:  \"\(peerID.displayName)\"")
@@ -185,7 +185,7 @@ extension PeerController: MCNearbyServiceAdvertiserDelegate {
         logPeer("didNotStartAdvertisingPeer \(error)")
     }
 }
-extension PeerController {
+extension PeersController {
 
     // Creates data object for IoT/net communications and syncs with other player.
     public func sendMessage(_ message: [String : Any]) {
