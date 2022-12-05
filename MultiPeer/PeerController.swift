@@ -1,7 +1,9 @@
+// Created by musesum on 12/4/22.
+
 import UIKit
 import MultipeerConnectivity
 
-protocol PeerControllerDelegate: AnyObject {
+protocol PeersControllerDelegate: AnyObject {
     func didChange() //
     func received(message: [String: Any], from peer: MCPeerID)
 }
@@ -20,8 +22,7 @@ class PeerController: NSObject {
     var peerState = [String: MCSessionState]()
     let startTime = Date().timeIntervalSince1970
 
-    /// An object that implements the `SessionControllerDelegate` protocol
-    weak var delegate: PeerControllerDelegate?
+    weak var delegate: PeersControllerDelegate?
     
     private let peerID = MCPeerID(displayName: UIDevice.current.name)
     
@@ -68,7 +69,7 @@ class PeerController: NSObject {
         browser?.delegate = nil
     }
 
-    func log(_ body: String) {
+    func logPeer(_ body: String) {
         let elapsedTime = Date().timeIntervalSince1970 - startTime
         let logTime = String(format: "%.2f", elapsedTime)
         print("⚡️ \(logTime) \(myName): \(body)")
@@ -83,7 +84,7 @@ extension PeerController: MCSessionDelegate {
 
         let displayName = peerID.displayName
 
-       log("session \"\(displayName)\" \(state.description())")
+       logPeer("session \"\(displayName)\" \(state.description())")
 
         peerState[displayName] = state
 
@@ -96,12 +97,12 @@ extension PeerController: MCSessionDelegate {
                  didReceive data: Data,
                  fromPeer peerID: MCPeerID) {
 
-        log("didReceive fromPeer \"\(peerID.displayName)\"")
+        logPeer("didReceive fromPeer \"\(peerID.displayName)\"")
 
         /// Sometimes a .notConnect state is sent from peer
         /// and yet still receiving messaages. This may be related to
         /// an outstanding GCKSession issue that throws up a NSLog
-        /// `GCKSession] Not in connected state, so giving up for participant [5F13E219] on channel [0].
+        /// `[GCKSession] Not in connected state, so giving up for participant ...`
         ///
         peerState[peerID.displayName] = .connected
 
@@ -118,7 +119,7 @@ extension PeerController: MCSessionDelegate {
                  fromPeer peerID: MCPeerID,
                  with progress: Progress) {
 
-        log("didStartReceivingResourceWithName \(resourceName) fromPeer  \"\(peerID.displayName)\" with progress [\(progress)]")
+        logPeer("didStartReceivingResourceWithName \(resourceName) fromPeer  \"\(peerID.displayName)\" with progress [\(progress)]")
     }
     
     func session(_ session: MCSession,
@@ -127,11 +128,10 @@ extension PeerController: MCSessionDelegate {
                  at localURL: URL?,
                  withError error: Error?) {
 
-        // If error is not nil something went wrong
-        if (error != nil) {
-            log("didFinishReceivingResourceWithName Error \(String(describing: error)) from \"\(peerID.displayName)\"")
+        if let error {
+            logPeer("didFinishReceivingResourceWithName Error \(String(describing: error)) from \"\(peerID.displayName)\"")
         } else {
-            log("didFinishReceivingResourceWithName \(resourceName) from \"\(peerID.displayName)\"")
+            logPeer("didFinishReceivingResourceWithName \(resourceName) from \"\(peerID.displayName)\"")
         }
     }
 
@@ -140,7 +140,7 @@ extension PeerController: MCSessionDelegate {
                  withName streamName: String,
                  fromPeer peerID: MCPeerID) {
 
-        log("\(streamName) from \(peerID.displayName)")
+        logPeer("\(streamName) from \(peerID.displayName)")
     }
 }
 
@@ -155,34 +155,34 @@ extension PeerController: MCNearbyServiceBrowserDelegate {
         let shouldInvite = (myName.compare(peerID.displayName) == .orderedDescending)
 
         if shouldInvite {
-            log("Inviting \"\(peerID.displayName)\"")
+            logPeer("Inviting \"\(peerID.displayName)\"")
             browser.invitePeer(peerID, to: session, withContext: nil, timeout: 30.0)
         } else {
-            log("Not inviting \"\(peerID.displayName)\"")
+            logPeer("Not inviting \"\(peerID.displayName)\"")
         }
 
         delegate?.didChange()
     }
     
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        log("lostPeer:  \"\(peerID.displayName)\"")
+        logPeer("lostPeer: \"\(peerID.displayName)\"")
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
-        log("didNotStartBrowsingForPeers: \(error)")
+        logPeer("didNotStartBrowsingForPeers: \(error)")
     }
 }
 
 extension PeerController: MCNearbyServiceAdvertiserDelegate {
 
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        log("didReceiveInvitationFromPeer:  \"\(peerID.displayName)\"")
+        logPeer("didReceiveInvitationFromPeer:  \"\(peerID.displayName)\"")
         
         invitationHandler(true, session)
     }
 
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
-        log("didNotStartAdvertisingPeer \(error)")
+        logPeer("didNotStartAdvertisingPeer \(error)")
     }
 }
 extension PeerController {

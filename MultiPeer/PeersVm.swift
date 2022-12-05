@@ -1,9 +1,9 @@
+// Created by musesum on 12/4/22.
 
 import SwiftUI
-
 import MultipeerConnectivity
 
-/// This is a SwiftUI View Model 
+/// This is the View Model for PeersView
 class PeersVm: ObservableObject {
 
     /// myName and one secound counter
@@ -39,7 +39,7 @@ class PeersVm: ObservableObject {
 
     }
 }
-extension PeersVm: PeerControllerDelegate {
+extension PeersVm: PeersControllerDelegate {
 
     func didChange() {
         var connectedList = ""
