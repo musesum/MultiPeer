@@ -12,7 +12,7 @@
 		8085C417293C8AC600975214 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8085C416293C8AC600975214 /* Assets.xcassets */; };
 		8085C41B293C8AC600975214 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8085C41A293C8AC600975214 /* Preview Assets.xcassets */; };
 		8085C424293C8B1500975214 /* PeersVm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8085C423293C8B1500975214 /* PeersVm.swift */; };
-		8085C426293C8B2500975214 /* PeersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8085C425293C8B2500975214 /* PeersController.swift */; };
+		8085C426293C8B2500975214 /* PeerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8085C425293C8B2500975214 /* PeerController.swift */; };
 		8085C429293D8DF700975214 /* MCSessionState+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8085C428293D8DF700975214 /* MCSessionState+extension.swift */; };
 /* End PBXBuildFile section */
 
@@ -24,7 +24,7 @@
 		8085C418293C8AC600975214 /* MultiPeer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MultiPeer.entitlements; sourceTree = "<group>"; };
 		8085C41A293C8AC600975214 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8085C423293C8B1500975214 /* PeersVm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeersVm.swift; sourceTree = "<group>"; };
-		8085C425293C8B2500975214 /* PeersController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeersController.swift; sourceTree = "<group>"; };
+		8085C425293C8B2500975214 /* PeerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerController.swift; sourceTree = "<group>"; };
 		8085C427293C940D00975214 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8085C428293D8DF700975214 /* MCSessionState+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MCSessionState+extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -61,7 +61,7 @@
 			children = (
 				8085C427293C940D00975214 /* Info.plist */,
 				8085C412293C8AC500975214 /* MultiPeerApp.swift */,
-				8085C425293C8B2500975214 /* PeersController.swift */,
+				8085C425293C8B2500975214 /* PeerController.swift */,
 				8085C428293D8DF700975214 /* MCSessionState+extension.swift */,
 				8085C423293C8B1500975214 /* PeersVm.swift */,
 				8085C414293C8AC500975214 /* PeersView.swift */,
@@ -154,7 +154,7 @@
 				8085C424293C8B1500975214 /* PeersVm.swift in Sources */,
 				8085C415293C8AC500975214 /* PeersView.swift in Sources */,
 				8085C413293C8AC500975214 /* MultiPeerApp.swift in Sources */,
-				8085C426293C8B2500975214 /* PeersController.swift in Sources */,
+				8085C426293C8B2500975214 /* PeerController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

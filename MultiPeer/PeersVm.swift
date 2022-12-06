@@ -1,28 +1,27 @@
-// Created by musesum on 12/4/22.
 
 import SwiftUI
+
 import MultipeerConnectivity
 
 /// This is the View Model for PeersView
 class PeersVm: ObservableObject {
 
     /// myName and one secound counter
-    @Published var peerTitle = ""
+    @Published var peersTitle = ""
 
     /// list of connected peers and their counter
-    @Published var peerList = ""
+    @Published var peersList = ""
 
-    /// manages
-    private var peerController: PeersController
-    private var peerMessage = [String: [String:Any]]()
+    private var peersController: PeersController
+    private var peersCounter = [String: Int]()
 
     init() {
-        peerController = PeersController()
-        peerController.delegate = self
+        peersController = PeersController.shared
+        peersController.peersDelegates.append(self)
         oneSecondCounter()
     }
     deinit {
-        peerController.delegate = nil
+        //peersController.peersDelegates.remove(self)
     }
 
     /// create a 1 second counter and send my count to all of my peers
@@ -30,35 +29,40 @@ class PeersVm: ObservableObject {
         var count = Int(0)
         func loopNext() {
             count += 1
-            peerController.sendMessage(["count": count] )
-            peerTitle = "\(peerController.myName): \(count)"
+            peersController.sendMessage(["count": count] )
+            peersTitle = "\(peersController.myName): \(count)"
         }
         _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true)  {_ in
             loopNext()
         }
-
     }
 }
 extension PeersVm: PeersControllerDelegate {
 
     func didChange() {
-        var connectedList = ""
-        for (name,state) in peerController.peerState {
-            connectedList += "\n" + state.icon() + name
 
-            if let message = peerMessage[name],
-               let count = message["count"] as? Int {
-                connectedList += ": \(count)"
+        var peerList = ""
+
+        for (name,state) in peersController.peerState {
+            peerList += "\n" + state.icon() + name
+
+            if let count = peersCounter[name]  {
+                peerList += ": \(count)"
             }
         }
-        self.peerList = connectedList
+        self.peersList = peerList
     }
+
 
     func received(message: [String: Any],
                   from peer: MCPeerID) {
 
-        peerMessage[peer.displayName] = message
-        didChange()
-        
+        // filter for internal 1 second counter
+        // other delegates may capture other messages
+        if let count = message["count"] as? Int {
+            peersCounter[peer.displayName] = count
+            didChange()
+        }
     }
+
 }

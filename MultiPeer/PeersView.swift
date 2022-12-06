@@ -10,9 +10,9 @@ struct PeersView: View {
                 Image(systemName: "globe")
                     .imageScale(.medium)
                     .foregroundColor(.accentColor)
-                Text(peersVm.peerTitle)
+                Text(peersVm.peersTitle)
             }
-            Text(peersVm.peerList)
+            Text(peersVm.peersList)
         }
         .padding()
     }
