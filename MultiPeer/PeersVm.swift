@@ -21,7 +21,7 @@ class PeersVm: ObservableObject {
         oneSecondCounter()
     }
     deinit {
-        //peersController.peersDelegates.remove(self)
+        peersController.remove(peersDelegate: self)
     }
 
     /// create a 1 second counter and send my count to all of my peers
