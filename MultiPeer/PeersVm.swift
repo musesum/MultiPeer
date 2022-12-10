@@ -6,14 +6,15 @@ import MultipeerConnectivity
 /// This is the View Model for PeersView
 class PeersVm: ObservableObject {
 
-    /// myName and one secound counter
+    /// myName and one second counter
     @Published var peersTitle = ""
 
     /// list of connected peers and their counter
     @Published var peersList = ""
 
     private var peersController: PeersController
-    private var peersCounter = [String: Int]()
+    private var peerCounter = [String: Int]()
+    private var peerStreamed = [String: Bool]()
 
     init() {
         peersController = PeersController.shared
@@ -27,10 +28,15 @@ class PeersVm: ObservableObject {
     /// create a 1 second counter and send my count to all of my peers
     private func oneSecondCounter() {
         var count = Int(0)
+        let myName = peersController.myName
         func loopNext() {
             count += 1
-            peersController.sendMessage(["count": count] )
-            peersTitle = "\(peersController.myName): \(count)"
+
+            // viaStream: false will use MCSessionDelegate
+            // viaStream: true  will use StreamDelegate
+            peersController.sendMessage(["peerName": myName, "count": count],
+                                        viaStream: true)
+            peersTitle = "\(myName): \(count)"
         }
         _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true)  {_ in
             loopNext()
@@ -44,23 +50,28 @@ extension PeersVm: PeersControllerDelegate {
         var peerList = ""
 
         for (name,state) in peersController.peerState {
-            peerList += "\n" + state.icon() + name
+            peerList += "\n " + state.icon() + name
 
-            if let count = peersCounter[name]  {
+            if let count = peerCounter[name]  {
                 peerList += ": \(count)"
+            }
+            if let streamed = peerStreamed[name] {
+                peerList += streamed ? "💧" : "⚡️"
             }
         }
         self.peersList = peerList
     }
 
 
-    func received(message: [String: Any],
-                  from peer: MCPeerID) {
+    func received(message: [String: Any], viaStream: Bool) {
 
         // filter for internal 1 second counter
         // other delegates may capture other messages
-        if let count = message["count"] as? Int {
-            peersCounter[peer.displayName] = count
+        if  let peerName = message["peerName"] as? String,
+            let count = message["count"] as? Int {
+            
+            peerCounter[peerName] = count
+            peerStreamed[peerName] = viaStream
             didChange()
         }
     }

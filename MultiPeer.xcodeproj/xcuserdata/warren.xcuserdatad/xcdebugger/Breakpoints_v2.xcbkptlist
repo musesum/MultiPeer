@@ -7,17 +7,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "25C38AA3-61D6-40F5-B48B-6283BCF88B65"
+            uuid = "1A28EAEB-D696-4459-B9B2-A563EDFBECBD"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MultiPeer/PeerController.swift"
+            filePath = "MultiPeer/PeersC+Stream.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "173"
-            endingLineNumber = "173"
-            landmarkName = "browser(_:foundPeer:withDiscoveryInfo:)"
+            startingLineNumber = "21"
+            endingLineNumber = "21"
+            landmarkName = "stream(_:handle:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "1A28EAEB-D696-4459-B9B2-A563EDFBECBD - bfa4db31d8fe5c9f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MultiPeer.PeersController.stream(_: __C.NSStream, handle: __C.NSStreamEvent) -&gt; ()"
+                  moduleName = "MultiPeer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/warren/Dev/DeepMuse/MultiPeer/MultiPeer/PeersC+Stream.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "21"
+                  endingLineNumber = "21"
+                  offsetFromSymbolStart = "816">
+               </Location>
+               <Location
+                  uuid = "1A28EAEB-D696-4459-B9B2-A563EDFBECBD - bfa4db31d8fe5c9f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MultiPeer.PeersController.stream(_: __C.NSStream, handle: __C.NSStreamEvent) -&gt; ()"
+                  moduleName = "MultiPeer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/warren/Dev/DeepMuse/MultiPeer/MultiPeer/PeersC+Stream.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "21"
+                  endingLineNumber = "21"
+                  offsetFromSymbolStart = "1036">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
