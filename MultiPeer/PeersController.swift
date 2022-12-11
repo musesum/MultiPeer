@@ -5,7 +5,7 @@ import MultipeerConnectivity
 
 public protocol PeersControllerDelegate: AnyObject {
     func didChange()
-    func received(message: [String: Any], viaStream: Bool)
+    func received(data: Data, viaStream: Bool)
 }
 
 public typealias PeerName = String
@@ -14,6 +14,7 @@ public typealias PeerName = String
 public class PeersController: NSObject {
 
     public static var shared = PeersController()
+
 
     /// Info.plist values for this service are:
     ///
@@ -28,9 +29,6 @@ public class PeersController: NSObject {
 
     private var advertiser: MCNearbyServiceAdvertiser?
     private var browser: MCNearbyServiceBrowser?
-
-    private var inputStream: InputStream?
-    private var peerStream = [MCPeerID: OutputStream]()
 
     public var peerState = [PeerName: MCSessionState]()
     public var hasPeers = false
@@ -77,53 +75,49 @@ public class PeersController: NSObject {
         browser?.stopBrowsingForPeers()
         browser?.delegate = nil
     }
+    private func elapsedTime() -> TimeInterval {
+        Date().timeIntervalSince1970 - startTime
+    }
 
     func logPeer(_ body: PeerName) {
-
-        let elapsedTime = Date().timeIntervalSince1970 - startTime
-        let logTime = String(format: "%.2f", elapsedTime)
+        let logTime = String(format: "%.2f", elapsedTime())
         print("⚡️ \(logTime) \(myName): \(body)")
     }
 }
 
 extension PeersController {
-    
-    /// send message to peers via MCSessionDelegate
-    public func sendSessionMessage(_ message: [String : Any]) {
-        
-        if session.connectedPeers.isEmpty {
-            print("🚫", terminator: "")
-            return
-        }
-
-        do {
-            let data = try JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
-            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-        } catch {
-            print("⚡️sendMessage error: \(error.localizedDescription)")
-            return
-        }
-    }
 
     /// send message to peers
     public func sendMessage(_ message: [String : Any],
-                            viaStream: Bool = true) {
-
+                            viaStream: Bool) {
         if session.connectedPeers.isEmpty {
             print("🚫", terminator: "")
             return
         }
-
         do {
             let data = try JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
-
+            sendMessage(data, viaStream: viaStream)
+        } catch {
+            logPeer("sendMessage error: \(error.localizedDescription)")
+            return
+        }
+    }
+    /// send message to peers
+    public func sendMessage(_ data: Data,
+                            viaStream: Bool) {
+        do {
             if viaStream {
                 for peerID in session.connectedPeers {
                     let peerName = peerID.displayName
-                    if let outputStream = getStream(peerName, peerID: peerID) {
+                    let streamName = "\(elapsedTime()): \"\(peerName)\""
+
+                    if let outputStream = try? session.startStream(withName: streamName, toPeer: peerID) {
+                        outputStream.delegate = self
+                        outputStream.schedule(in: .main,  forMode: .common)
                         outputStream.open()
                         let count = outputStream.write(data.bytes, maxLength: data.bytes.count)
-                        logPeer("💧output: \"\(peerName)\" bytes: \(count)")
+                        outputStream.close()
+                        logPeer("💧send: toPeer: \"\(peerName)\" bytes: \(count)")
                     }
                 }
             } else {
@@ -133,35 +127,17 @@ extension PeersController {
             }
         } catch {
             logPeer("sendMessage error: \(error.localizedDescription)")
-            return
         }
     }
 
-    func getStream(_ streamName: String, peerID: MCPeerID) -> OutputStream? {
+    /// Sometimes a .notConnect state is sent from peer and yet still receiving messaages.
+    ///
+    /// There is a long standing GCKSession issue that throws up a NSLog:
+    ///
+    ///     [GCKSession] Not in connected state, so giving up for participant ...
+    ///     // not sure if this is related to false .nonConnected
 
-        if let stream = peerStream[peerID]  {
-            return stream
-        } else if let outputStream = try? session.startStream(withName: streamName, toPeer: peerID) {
-
-            outputStream.delegate = self
-            outputStream.schedule(in: .main,  forMode: .common)
-
-            peerStream[peerID] = outputStream
-            logPeer("💧outputStream: toPeer: \(peerID.displayName)")
-            return outputStream
-        } else {
-            logPeer("💧⁉️")
-            return nil
-        }
-    }
-    /** Sometimes a .notConnect state is sent from peer and yet still receiving messaages.
-
-   There is a long standing GCKSession issue that throws up a NSLog:
-
-        [GCKSession] Not in connected state, so giving up for participant ...
-        // not sure if this is related to false .nonConnected
-     */
-     func fixConnectedState(for peerName: String) {
+    func fixConnectedState(for peerName: String) {
         peerState[peerName] = .connected
     }
 

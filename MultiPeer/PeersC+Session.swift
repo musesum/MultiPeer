@@ -45,14 +45,11 @@ extension PeersController: MCSessionDelegate {
 
         let peerName = peerID.displayName
         logPeer("⚡️didReceive: \"\(peerName)\"")
-
         fixConnectedState(for: peerName)
 
-        var message = [String: Any]()
-        message = try! JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String : Any]
         DispatchQueue.main.async {
             for delegate in self.peersDelegates {
-                delegate.received(message: message, viaStream: false)
+                delegate.received(data: data, viaStream: false)
             }
         }
     }

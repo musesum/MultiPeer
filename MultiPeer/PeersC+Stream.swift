@@ -16,21 +16,11 @@ extension PeersController: StreamDelegate {
 
             let data = Data(reading: inputStream)
 
-            do {
-                let message = try JSONSerialization.jsonObject(with: data) as! [String: Any]
-                if let peerName = message["peerName"] as? String {
-                    fixConnectedState(for: peerName)
-                    self.logPeer("💧input:  \"\(peerName)\" bytes:\(data.bytes.count) count:\(message.count) ")
+            self.logPeer("💧input bytes:\(data.bytes.count)")
+            DispatchQueue.main.async {
+                for delegate in self.peersDelegates {
+                    delegate.received(data: data, viaStream: true)
                 }
-
-                DispatchQueue.main.async {
-                    for delegate in self.peersDelegates {
-                        delegate.received(message: message, viaStream: true)
-                    }
-                }
-            }
-            catch {
-                logPeer("💧stream error: \(error.localizedDescription)")
             }
         }
     }

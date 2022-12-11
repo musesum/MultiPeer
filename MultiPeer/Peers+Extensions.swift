@@ -20,23 +20,6 @@ extension MCSessionState {
 }
 
 
-// Swift 5 from https://stackoverflow.com/a/46301838/419740
-
-//extension OutputStream {
-//    func write(data: Data) -> Int {
-//        return data.withUnsafeBytes {
-//            write($0.bindMemory(to: UInt8.self).baseAddress!, maxLength: data.count)
-//        }
-//    }
-//}
-//
-//extension InputStream {
-//    func read(data:  Data) -> Int {
-//        return data.withUnsafeMutableBytes {
-//            read($0.bindMemory(to: UInt8.self).baseAddress!, maxLength: data.count)
-//        }
-//    }
-//}
 
 extension Data {
     var bytes: [UInt8] {
@@ -66,10 +49,11 @@ extension Data {
     /**
      Create a new Data object from inputStream
      - Parameter reading: The input stream to read data from.
-     - Note: does NOT close input stream
+     - Note: closes input stream
      */
     init(reading input: InputStream) {
         self.init()
+        input.open()
         let bufferSize = 1024
         let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
         while input.hasBytesAvailable {
@@ -77,6 +61,7 @@ extension Data {
             self.append(buffer, count: read)
         }
         buffer.deallocate()
+        input.close()
     }
 
     /**

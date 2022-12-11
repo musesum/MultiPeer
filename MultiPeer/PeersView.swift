@@ -4,15 +4,17 @@ import SwiftUI
 
 struct PeersView: View {
     @ObservedObject var peersVm: PeersVm
+    var peersTitle: String { peersVm.peersTitle }
+    var peersList: String { peersVm.peersList }
     var body: some View {
-        VStack(alignment:.leading) {
+        VStack(alignment: .leading) {
             HStack {
                 Image(systemName: "globe")
                     .imageScale(.medium)
                     .foregroundColor(.accentColor)
-                Text(peersVm.peersTitle)
+                Text(peersTitle)
             }
-            Text(peersVm.peersList)
+            Text(peersList)
         }
         .padding()
     }

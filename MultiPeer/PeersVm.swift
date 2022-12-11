@@ -6,6 +6,8 @@ import MultipeerConnectivity
 /// This is the View Model for PeersView
 class PeersVm: ObservableObject {
 
+    public static let shared = PeersVm()
+
     /// myName and one second counter
     @Published var peersTitle = ""
 
@@ -50,7 +52,7 @@ extension PeersVm: PeersControllerDelegate {
         var peerList = ""
 
         for (name,state) in peersController.peerState {
-            peerList += "\n " + state.icon() + name
+            peerList += "\n \(state.icon()) \(name)"
 
             if let count = peerCounter[name]  {
                 peerList += ": \(count)"
@@ -63,16 +65,26 @@ extension PeersVm: PeersControllerDelegate {
     }
 
 
-    func received(message: [String: Any], viaStream: Bool) {
+    func received(data: Data, viaStream: Bool) {
 
-        // filter for internal 1 second counter
-        // other delegates may capture other messages
-        if  let peerName = message["peerName"] as? String,
-            let count = message["count"] as? Int {
-            
-            peerCounter[peerName] = count
-            peerStreamed[peerName] = viaStream
-            didChange()
+        do {
+            let message = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String : Any]
+
+            // filter for internal 1 second counter
+            // other delegates may capture other messages
+
+            if  let peerName = message["peerName"] as? String,
+                let count = message["count"] as? Int {
+
+                peersController.fixConnectedState(for: peerName)
+
+                peerCounter[peerName] = count
+                peerStreamed[peerName] = viaStream
+                didChange()
+            }
+        }
+        catch {
+
         }
     }
 
